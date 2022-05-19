@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: shipping
+  labels:
+    app: shipping
+spec:
+  clusterIP: None
+  selector:
+    app: shipping
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shipping
+  labels:
+    app: shipping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shipping
+  template:
+    metadata:
+      labels:
+        app: shipping
+    spec:
+      containers:
+      - name: shipping
+        image: shipping
+      - name: shipping-sidecar
+        image: hazelcast/turbine-sidecar
+        env:
+          - name: CLUSTER_ADDRESS
+            value: "hz-hazelcast:5701"
+          - name: APP_PORT
+            value: "3003"
+          - name: "TURBINE_POD_IP"
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP

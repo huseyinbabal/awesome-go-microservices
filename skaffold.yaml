@@ -1,0 +1,24 @@
+apiVersion: skaffold/v2beta26
+kind: Config
+metadata:
+  name: awesome-go-microservices
+build:
+  artifacts:
+  - image: order
+    context: order
+    buildpacks:
+      builder: gcr.io/buildpacks/builder:v1
+  - image: payment
+    context: payment
+    buildpacks:
+      builder: gcr.io/buildpacks/builder:v1
+  - image: shipping
+    context: shipping
+    buildpacks:
+      builder: gcr.io/buildpacks/builder:v1
+deploy:
+  kubectl:
+    manifests:
+    - payment/deployment.yaml
+    - shipping/deployment.yaml
+    - order/deployment.yaml
